@@ -1,11 +1,13 @@
 {
   "name": "catapi-react-redux-ts",
   "version": "1.0.0",
+   "license": "UNLICENSED",
   "description": "",
   "keywords": [],
   "main": "src/index.tsx",
   "dependencies": {
     "@types/react-router-dom": "^5.1.8",
+    "babel-loader": "8.0.4",
     "node-sass": "4.12",
     "react": "16.8.4",
     "react-dom": "16.8.4",
