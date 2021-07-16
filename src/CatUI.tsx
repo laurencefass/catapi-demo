@@ -377,7 +377,7 @@ const ImageGallery = (props) => {
           <div id={`favourite-portal-${id}`}/>
           <img src={url} key={index} alt="cat"/>
           <div className="control-container">
-            <DeleteControl id={id} />
+             {/* <DeleteControl id={id} /> */}
             <FavouriteControl id={id} />
             <VoteControl id={id} />
           </div>
