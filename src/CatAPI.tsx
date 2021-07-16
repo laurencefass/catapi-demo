@@ -1,5 +1,6 @@
 // 1. You should be able to upload a new cat image
 import { trace, traceCurrent } from './utils'
+import { TFavourite, TCat, TVote } from './types'
 
 let SUB_ID = "user_";
 let X_API_KEY = "9b22e7ce-301e-4a1d-8ec5-1272826cd2ce" 
@@ -24,15 +25,12 @@ export const apiRequest = async (
   var requestOptions = {
     method: method,
     headers: myHeaders,
-    body: undefined
+    body : body ? JSON.stringify(body) : undefined
   };
 
-  if (body)
-    requestOptions = {...requestOptions, body: JSON.stringify(body)}
+  trace("apiRequest values", { url, type, method, body, requestOptions});
 
-  trace("apiRequest values", { type, method, body, requestOptions});
-
-  let response = undefined;
+  let response: any = undefined;
   try {
     response = await fetch(url, requestOptions)
     if (!response.ok) {
@@ -179,9 +177,10 @@ const getFavourites = async () => {
 export const apiDeleteAllFavourites = async () => {
   let favourites = await getFavourites();
   console.log("apiGetFavouriteCats", favourites);
-  favourites.map(item => {
+  favourites.map((item: TFavourite) => {
     return (async () => {
-      await apiDeleteFavourite(item.id)
+      if (item)
+        await apiDeleteFavourite(item.id)
     })();
   })
 }
@@ -189,7 +188,7 @@ export const apiDeleteAllFavourites = async () => {
 export const apiDeleteAllCats = async () => {
   let cats = await apiGetMyCats();
   console.log("apiDeleteAllCats", cats);
-  cats.map(item => {
+  cats.map((item: TCat) => {
     return (async () => {
       await apiDeleteCat(item.id)
     })();
@@ -199,7 +198,7 @@ export const apiDeleteAllCats = async () => {
 export const apiDeleteAllVotes = async () => {
   let votes = await apiGetVotes();
   console.log("apiDeleteAllVotes", votes);
-  votes.map(item => {
+  votes.map((item: TVote) => {
     return (async () => {
       await apiDeleteVote(item.id)
     })();

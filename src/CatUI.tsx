@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ICatCollectionState } from "./catReducer";
 import { trace } from './utils'
+import  {TVote, TFavourite, TCat} from './types';
 import { BrowserRouter as Router, useHistory, Switch, Route, Link } from "react-router-dom";
 
 
@@ -103,7 +104,7 @@ const FavouriteControl = (props: ICatProps ) => {
   // const cats = useSelector((state: ICatCollectionState) => state.cats);
   const favourites = useSelector((state: ICatCollectionState) => state.favourites);
   const dispatch = useDispatch();
-  const [favourite, setFavourite] = useState(undefined);
+  const [favourite, setFavourite] = useState<undefined | TFavourite>();
 
   useEffect(()=>{
     trace("FavouriteControl.useEffect[favourite]", favourite);
@@ -111,13 +112,15 @@ const FavouriteControl = (props: ICatProps ) => {
 
   useEffect(()=>{
     trace("FavouriteControl.useEffect[favourites]", favourites);
-      let found = favourites.find(item => item && item.image_id === props.id)
+    if (favourites.length) {
+      let found: TFavourite = favourites.find((item: TFavourite) => item ? item.image_id === props.id : false);
       trace("FavouriteControl props.id, found", props.id, found);
       setFavourite(found);
+    }
   }, [favourites, props.id]);
 
   
-  const unFavourite = (id) => {
+  const unFavourite = (id: string) => {
     try {
       (async (id) => {
         let favourite = await apiDeleteFavourite(id);
@@ -131,7 +134,7 @@ const FavouriteControl = (props: ICatProps ) => {
     }
   } 
 
-  const addFavourite = (id) => {
+  const addFavourite = (id: string) => {
     try {
       (async (id) => {
         let favourite = await apiAddFavourite(id);
@@ -160,14 +163,14 @@ const FavouriteControl = (props: ICatProps ) => {
   return (
     <span onClick={handleClick} className="widget">
     {favourite ? <div>❤️</div> : <div style={{opacity:0.5}}>🤍</div>}
-    {favourite && createPortal(
+    {/* {favourite && createPortal(
       <div>❤️</div>, document.getElementById(`favourite-portal-${props.id}`)
-    )}
+    )} */}
     </span>
   );
 };
 
-const Loader = (props) => {
+const Loader = (props: any) => {
   return (
     <div className="loader-wrapper">
       <div className="loader"/>
@@ -176,13 +179,14 @@ const Loader = (props) => {
   )
 }
 
+
 const CatSelector = ({setMessage}) => {
-  let [blobURL, setBlobURL] = useState(undefined);
+  let [blobURL, setBlobURL] = useState<string | undefined>();
   const cats = useSelector((state: ICatCollectionState) => state.cats);
   const dispatch = useDispatch();
   let history = useHistory();
 
-  const onSelectFile = async (event) => {
+  const onSelectFile = async (event: any) => {
     setMessage("");
     const fileBlob = event.target.files[0];
     let blobURL = URL.createObjectURL(fileBlob);
@@ -206,7 +210,7 @@ const CatSelector = ({setMessage}) => {
   return (<>
     <div className="cat-selector">
       {!blobURL && <>
-        <input disabled={blobURL} type="file" onChange={onSelectFile} />     
+        <input disabled={blobURL ? true : false} type="file" onChange={onSelectFile} />     
       </>}
       {blobURL && <>
       <h2>Cat upload in progress...</h2>

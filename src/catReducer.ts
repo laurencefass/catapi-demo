@@ -44,7 +44,7 @@ export function catReducer(state: ICatCollectionState = initialCatState, action:
 
     case ECatActionTypes.UN_FAVOURITE:
       let id = action.payload as string;
-      return {...state, favourites: [...state.favourites.filter(item => item.id !== id)]};
+      return {...state, favourites: [...state.favourites.filter(item => item ? item.id !== id : false)]};
 
     // add a single favourite
     case ECatActionTypes.SET_FAVOURITE:
