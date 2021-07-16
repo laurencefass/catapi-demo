@@ -7,7 +7,7 @@ export type TVote = {
   country_code: string
 }
 
-export type TFavourite = {
+export type TFavourite = undefined | {
   id: string,
   user_id: string,
   image_id: string,
