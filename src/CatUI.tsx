@@ -9,29 +9,21 @@ import { BrowserRouter as Router, useHistory, Switch, Route, Link } from "react-
 
 import { 
   apiUploadCat, 
-  apiGetMyCats, 
   apiDeleteCat, 
-  apiGetFavourites, 
-  apiDeleteFavourite,
-  apiAddFavourite,
-  apiGetFavouriteById,
-  apiGetVotes,
-  apiGetVoteById,
   apiDeleteAllFavourites,
   apiDeleteAllVotes,
   apiDeleteAllCats,
-  apiSubmitVote,
 } from "./CatAPI";
 
 import { 
   VotesAction,
-  VoteUpAction,
-  VoteDownAction,
   FavouritesAction,
-  SetFavouriteAction,
-  UnFavouriteAction,
   CollectionAction, 
   DeleteCatAction,
+  handleVoteThunk,
+  addFavouriteThunk,
+  unFavouriteThunk,
+  initCatsThunk,
 } from "./catActions";
 
 const DEBUG = true;
@@ -48,27 +40,7 @@ const VoteControl = (props: ICatProps) => {
   const dispatch = useDispatch();
 
   const handleVote = (value: number) => {
-    try {
-      (async () => {
-        let vote = await apiSubmitVote(props.id, value ? true : false);
-        if (!vote)
-          throw new Error("VoteControl favourite object not returned from server"); 
-  
-        vote = await apiGetVoteById(vote.id);
-        if (!vote)
-          throw new Error("VoteControl favourite object not returned from server");
-        
-        // dispatch(VotesAction([...votes.concat(vote)]));
-        if (value) {
-          dispatch(VoteUpAction(vote));
-        } else {
-          dispatch(VoteDownAction(vote));
-        } 
-      })();    
-    }
-    catch(e) {
-      alert("CATUI connection error" + e.message);
-    }
+    dispatch(handleVoteThunk(props.id, value));
   }
 
   useEffect(()=>{
@@ -119,38 +91,14 @@ const FavouriteControl = (props: ICatProps ) => {
     }
   }, [favourites, props.id]);
 
-  
   const unFavourite = (id: string) => {
-    try {
-      (async (id) => {
-        let favourite = await apiDeleteFavourite(id);
-        if (!favourite)
-          throw new Error("setFavouriteReducer favourite object not returned from server"); 
-        dispatch(UnFavouriteAction(id))
-        setFavourite(undefined);
-      })(id);  
-    }
-    catch(e) {
-      alert("CATUI connection error" + e.message);
-    }
+    dispatch(unFavouriteThunk(id))
+    setFavourite(undefined);
   } 
 
   const addFavourite = (id: string) => {
-    try {
-      (async (id) => {
-        let favourite = await apiAddFavourite(id);
-        if (!favourite)
-          throw new Error("setFavouriteReducer favourite object not returned from server"); 
-        favourite = await apiGetFavouriteById(favourite.id);
-        if (!favourite)
-          throw new Error("setFavouriteReducer favourite object not returned from server");
-        dispatch(SetFavouriteAction(favourite));
-      })(id);    
-    }
-    catch(e) {
-      alert("CATUI connection error" + e.message);
-    }
-  } 
+    dispatch(addFavouriteThunk(id));
+  }
   
   const handleClick = () => {
     trace("handleClick favourite", favourite);
@@ -256,30 +204,15 @@ export const CatUI = () => {
   }, [cats]);
 
   useEffect(() => {
-    (async () => {
-      trace("CatUI.getMyCats")
-      try {
-        setMessage("Fetching data. Please wait a moment.")
-       
-        let cats = await apiGetMyCats();
-        trace("CatUI.getMyCats success", cats);
-        dispatch(CollectionAction(cats));
-
-        let favourites = await apiGetFavourites();
-        trace("CATUI.apiGetFavourites", favourites);
-        dispatch(FavouritesAction(favourites));
-  
-        let votes = await apiGetVotes();
-        trace("CATUI.apiGetFavourites", votes);
-        dispatch(VotesAction(votes));  
-
-        setMessage("Status: Connected");
-        setConnected(true);
-      } catch (error) {
-        setMessage("Something went wrong. Check connection and api password");
-      }
-    })();
-  }, [dispatch]);
+    try {
+      setMessage("Fetching data. Please wait a moment.")
+      dispatch(initCatsThunk());
+      setMessage("Status: Connected");
+      setConnected(true);
+    } catch (error) {
+      setMessage("Something went wrong. Check connection and api password");
+    }
+  }, []);
 
   const onReset = async () => {
     try {
