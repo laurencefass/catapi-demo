@@ -1,13 +1,14 @@
-import * as React from "react";
+import * as React  from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux'
 import { catReducer } from "./catReducer";
 import { CatUI } from "./CatUI";
+import thunk from 'redux-thunk'
 
 import "./styles.scss";
 
-const store = createStore(catReducer);
+const store = createStore(catReducer ,applyMiddleware(thunk));
 
 function App() {
   return (
