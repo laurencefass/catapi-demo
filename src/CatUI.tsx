@@ -127,11 +127,11 @@ const FavouriteControl = (props: ICatProps ) => {
         if (!favourite)
           throw new Error("setFavouriteReducer favourite object not returned from server"); 
         dispatch(UnFavouriteAction(id))
+        setFavourite(undefined);
       })(id);  
     }
     catch(e) {
       alert("CATUI connection error" + e.message);
-      setFavourite(undefined);
     }
   } 
 
