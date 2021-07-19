@@ -131,6 +131,7 @@ const FavouriteControl = (props: ICatProps ) => {
     }
     catch(e) {
       alert("CATUI connection error" + e.message);
+      setFavourite(undefined);
     }
   } 
 
