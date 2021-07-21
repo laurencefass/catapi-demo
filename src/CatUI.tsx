@@ -236,8 +236,8 @@ export const CatUI = () => {
     <Router>
       <div onClick={onReset} className="reset"/>
       <div className="header">
-        <h1>It's Caturday Night Thunking</h1>
-        <h2>CatAPI + React + Redux + Thunk</h2>
+        <h2>React REST demonstration</h2>
+        <h4>CatAPI + React + Redux + Thunk</h2>
         <p>❤️ and 👍🏽 your Favourite <span onClick={onReset}>😻</span> pics</p>
       </div>
       {message && <p>{message}</p>}
